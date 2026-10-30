@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مُصَلّاي - متابعة الصلاة والتنافس</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        amber: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #022c22;
+            color: #f3f4f6;
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-bg {
+            background: rgba(6, 78, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Header Section -->
+    <header class="card-bg sticky top-0 z-40 border-b border-amber-500/20 px-4 py-3 shadow-lg">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <i class="fa-solid font-bold fa-mosque text-2xl text-amber-400"></i>
+                <h1 class="text-2xl font-bold gold-gradient-text">مُصَلّاي</h1>
+            </div>
+            
+            <!-- User Stats Summary -->
+            <div class="flex items-center space-x-4 space-x-reverse bg-emerald-950/80 px-4 py-1.5 rounded-full border border-amber-500/30">
+                <div class="flex items-center gap-1.5" title="مجموع النقاط">
+                    <i class="fa-solid fa-trophy text-amber-400 text-sm"></i>
+                    <span id="userPointsDisplay" class="font-bold text-amber-400">0</span>
+                    <span class="text-xs text-gray-300">نقطة</span>
+                </div>
+                <div class="h-4 w-[1px] bg-emerald-800"></div>
+                <div class="flex items-center gap-1.5" title="اسم المستخدم الحالي">
+                    <i class="fa-solid fa-user text-emerald-400 text-sm"></i>
+                    <span id="currentUserNameDisplay" class="text-sm text-gray-200">مستخدم</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 mt-6 space-y-6">
+
+        <!-- Navigation Tabs -->
+        <div class="flex rounded-xl p-1 card-bg">
+            <button onclick="switchTab('prayersTab')" id="tab-prayersTab" class="flex-1 py-2.5 rounded-lg text-center font-bold text-amber-400 bg-emerald-800/80 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-clock"></i> مواعيد اليوم
+            </button>
+            <button onclick="switchTab('leaderboardTab')" id="tab-leaderboardTab" class="flex-1 py-2.5 rounded-lg text-center font-bold text-gray-400 hover:text-amber-300 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-ranking-star"></i> المنافسة والأصدقاء
+            </button>
+        </div>
+
+        <!-- TAB 1: PRAYERS SECTION -->
+        <section id="prayersTab" class="space-y-4">
+            
+            <!-- Header Banner -->
+            <div class="card-bg rounded-2xl p-5 text-center relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl text-amber-400">
+                    <i class="fa-solid fa-kaaba"></i>
+                </div>
+                <p class="text-amber-300 text-sm font-semibold mb-1" id="currentHijriDate">جاري التحديث...</p>
+                <h2 class="text-xl font-bold text-gray-100">حافظ على صلاتك في وقتها</h2>
+                <p class="text-xs text-gray-300 mt-1">قم بتأكيد الصلاة برفع صورة أو إثبات قبل انتهاء الوقت المخصص (ساعة واحدة من وقت الأذان)</p>
+            </div>
+
+            <!-- Prayers Cards Container -->
+            <div id="prayersList" class="space-y-3">
+                <!-- Dynamic Content Generated by JS -->
+            </div>
+        </section>
+
+        <!-- TAB 2: LEADERBOARD & FRIENDS SECTION -->
+        <section id="leaderboardTab" class="space-y-6 hidden">
+            
+            <!-- Add Friend / Join Group Card -->
+            <div class="card-bg rounded-2xl p-5 space-y-4">
+                <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus"></i> إضافة صديق للمنافسة
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="friendNameInput" placeholder="أدخل اسم الصديق..." class="flex-1 bg-emerald-950/80 border border-emerald-700/50 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-400 text-sm">
+                    <button onclick="addFriend()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-emerald-950 font-bold px-5 py-2 rounded-xl text-sm transition-all shadow-md">
+                        إضافة
+                    </button>
+                </div>
+            </div>
+
+            <!-- Leaderboard Table Card -->
+            <div class="card-bg rounded-2xl p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-trophy"></i> لوحة المتصدرين
+                    </h3>
+                    <span class="text-xs text-gray-400">ترتيب النقاط اليومي</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead>
+                            <tr class="border-b border-emerald-700/50 text-amber-300/80">
+                                <th class="pb-3 px-2">الترتيب</th>
+                                <th class="pb-3 px-2">الاسم</th>
+                                <th class="pb-3 px-2 text-left">النقاط</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody" class="divide-y divide-emerald-800/40">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Upload Verification Modal -->
+    <div id="uploadModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-bg bg-emerald-950 border border-amber-500/40 w-full max-w-md rounded-2xl p-6 space-y-4 relative">
+            <button onclick="closeUploadModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <div class="text-center space-y-1">
+                <h3 class="text-lg font-bold text-amber-400" id="modalPrayerTitle">تأكيد أداء الصلاة</h3>
+                <p class="text-xs text-gray-300">قم بإرفاق صورة توثق أداء الصلاة (مثل صورة من المسجد أو سجادة الصلاة)</p>
+            </div>
+
+            <div class="space-y-3">
+                <div class="border-2 border-dashed border-emerald-600 rounded-xl p-6 text-center hover:border-amber-400 transition-all cursor-pointer bg-emerald-900/30" onclick="document.getElementById('proofFileInput').click()">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-amber-400 mb-2"></i>
+                    <p class="text-sm font-semibold text-gray-200">اضغط هنا لاختيار صورة الإثبات</p>
+                    <p class="text-xs text-gray-400 mt-1" id="fileNameDisplay">لم يتم اختيار ملف بعد</p>
+                </div>
+                <input type="file" id="proofFileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+
+                <button onclick="submitPrayerProof()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-emerald-950 font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check-circle"></i> تأكيد وكسب النقاط (+10)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wisdom / Hadith Modal Popup -->
+    <div id="wisdomModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-bg bg-emerald-950 border-2 border-amber-400 w-full max-w-md rounded-2xl p-6 text-center space-y-5 relative shadow-2xl">
+            
+            <div class="w-16 h-16 bg-amber-400/20 border border-amber-400 rounded-full flex items-center justify-center mx-auto text-amber-400 text-2xl">
+                <i class="fa-solid fa-hands-praying"></i>
+            </div>
+
+            <div>
+                <span class="text-xs font-bold bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full border border-amber-400/30" id="wisdomBadge">حديث شريف</span>
+                <h3 class="text-xl font-bold text-amber-400 mt-3">تقبّل الله طاعتك!</h3>
+                <p class="text-sm text-emerald-200 font-bold mt-1">حصلت على +10 نقاط جديدة 🎉</p>
+            </div>
+
+            <blockquote class="bg-emerald-900/40 p-4 rounded-xl border-r-4 border-amber-400 text-gray-200 text-sm leading-relaxed font-semibold italic text-right" id="wisdomContent">
+                "مَن صَلَّى لِلَّهِ أرْبَعِينَ يَوْمًا فِي جَماعَةٍ يُدْرِكُ التَّكْبِيرَةَ الأُولَى كُتِبَتْ لَهُ بَراءَتانِ: بَراءَةٌ مِنَ النَّارِ، وبَراءَةٌ مِنَ النِّفاقِ."
+            </blockquote>
+
+            <button onclick="closeWisdomModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-emerald-950 font-bold py-2.5 rounded-xl transition-all">
+                متابعة
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Default Prayer Schedule Base Times (Simulated / Local Time)
+        const defaultPrayers = [
+            { id: 'fajr', name: 'الفجر', time: '04:30', points: 10 },
+            { id: 'dhuhr', name: 'الظهر', time: '12:15', points: 10 },
+            { id: 'asr', name: 'العصر', time: '15:30', points: 10 },
+            { id: 'maghrib', name: 'المغرب', time: '18:00', points: 10 },
+            { id: 'isha', name: 'العشاء', time: '19:30', points: 10 }
+        ];
+
+        // Motivational Wisdoms and Hadiths
+        const wisdomsList = [
+            { type: 'حديث شريف', text: 'قال رسول الله ﷺ: "أَحَبُّ الأَعْمَالِ إِلَى اللهِ الصَّلاَةُ عَلَى وَقْتِهَا".' },
+            { type: 'نصيحة تطويرية', text: 'الانضباط في الصلاة هو اللبنة الأولى لبناء شخصية قوية وقادرة على إدارة الوقت والنجاح في الحياة.' },
+            { type: 'حديث شريف', text: 'قال رسول الله ﷺ: "مَنْ صَلَّى الْبَرْدَيْنِ (الفجر والعصر) دَخَلَ الْجَنَّةَ".' },
+            { type: 'نصيحة تطويرية', text: 'التركيز والخشوع في صلاتك يدرب عقلك على التواجد في اللحظة الحالية ويقلل من التوتر اليومي.' },
+            { type: 'حديث شريف', text: 'قال رسول الله ﷺ: "الصَّلَوَاتُ الْخَمْسُ وَالْجُمُعَةُ إِلَى الْجُمُعَةِ كَفَّارَاتٌ لِمَا بَيْنَهُنَّ مَا لَمْ تُغْشَ الْكَبَائِرُ".' },
+            { type: 'نصيحة تطويرية', text: 'اجعل صلاتك محطة لإعادة شحن طاقتك الذهنية والروحية وليست مجرد عادة تقوم بها.' }
+        ];
+
+        // Application State Management
+        let appState = {
+            currentUser: 'محمد',
+            points: 0,
+            completedPrayers: {}, // { 'fajr': timestamp }
+            friends: [
+                { name: 'أحمد', points: 40 },
+                { name: 'عمر', points: 30 },
+                { name: 'يوسف', points: 20 }
+            ]
+        };
+
+        let selectedPrayerForUpload = null;
+        let selectedFile = null;
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStateFromLocalStorage();
+            updateHijriDate();
+            renderPrayers();
+            renderLeaderboard();
+            updateHeaderStats();
+            
+            // Periodically check prayer status (e.g., locking expired ones)
+            setInterval(renderPrayers, 60000);
+        });
+
+        // Save State
+        function saveState() {
+            localStorage.setItem('mosallay_app_state', JSON.stringify(appState));
+        }
+
+        // Load State
+        function loadStateFromLocalStorage() {
+            const saved = localStorage.getItem('mosallay_app_state');
+            if (saved) {
+                appState = JSON.parse(saved);
+            }
+        }
+
+        // Display Hijri Date Placeholder
+        function updateHijriDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('ar-EG', options);
+            document.getElementById('currentHijriDate').innerText = today;
+        }
+
+        // Render Prayers Cards
+        function renderPrayers() {
+            const container = document.getElementById('prayersList');
+            container.innerHTML = '';
+
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+            defaultPrayers.forEach(prayer => {
+                const [pHours, pMinutes] = prayer.time.split(':').map(Number);
+                const prayerMinutes = pHours * 60 + pMinutes;
+                
+                // Expiry window: 60 minutes after prayer time
+                const isExpired = currentMinutes > (prayerMinutes + 60);
+                const isCompleted = !!appState.completedPrayers[prayer.id];
+
+                let statusBadge = '';
+                let actionButton = '';
+
+                if (isCompleted) {
+                    statusBadge = `<span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-bold"><i class="fa-solid fa-check text-xs"></i> تم الأداء</span>`;
+                    actionButton = `<button disabled class="w-full bg-emerald-900/40 text-emerald-400 border border-emerald-700/50 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed">تم توثيق الصلاة (+10 نقاط)</button>`;
+                } else if (isExpired) {
+                    statusBadge = `<span class="text-xs bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1 rounded-full font-bold"><i class="fa-solid fa-lock text-xs"></i> انتهى الوقت</span>`;
+                    actionButton = `<button disabled class="w-full bg-emerald-950/60 text-gray-500 border border-emerald-900 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i> فات وقت التوثيق (ساعة واحدة)
+                    </button>`;
+                } else {
+                    statusBadge = `<span class="text-xs bg-amber-400/20 text-amber-300 border border-amber-400/30 px-3 py-1 rounded-full font-bold"><i class="fa-solid fa-hourglass-half text-xs"></i> متاح للتوثيق</span>`;
+                    actionButton = `<button onclick="openUploadModal('${prayer.id}', '${prayer.name}')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-emerald-950 font-bold py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-camera"></i> توثيق وإرسال صورة
+                    </button>`;
+                }
+
+                const cardHTML = `
+                    <div class="card-bg rounded-2xl p-4 flex flex-col justify-between space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <div class="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 font-bold">
+                                    <i class="fa-solid fa-kaaba"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-100">${prayer.name}</h4>
+                                    <p class="text-xs text-amber-300 font-semibold">${prayer.time}</p>
+                                </div>
+                            </div>
+                            ${statusBadge}
+                        </div>
+                        <div>
+                            ${actionButton}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // Switch Tabs Logic
+        function switchTab(tabId) {
+            document.getElementById('prayersTab').classList.add('hidden');
+            document.getElementById('leaderboardTab').classList.add('hidden');
+            
+            document.getElementById('tab-prayersTab').className = 'flex-1 py-2.5 rounded-lg text-center font-bold text-gray-400 hover:text-amber-300 transition-all flex items-center justify-center gap-2';
+            document.getElementById('tab-leaderboardTab').className = 'flex-1 py-2.5 rounded-lg text-center font-bold text-gray-400 hover:text-amber-300 transition-all flex items-center justify-center gap-2';
+
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).className = 'flex-1 py-2.5 rounded-lg text-center font-bold text-amber-400 bg-emerald-800/80 transition-all flex items-center justify-center gap-2';
+        }
+
+        // Modal Upload Handlers
+        function openUploadModal(prayerId, prayerName) {
+            selectedPrayerForUpload = prayerId;
+            selectedFile = null;
+            document.getElementById('modalPrayerTitle').innerText = `تأكيد صلاة ${prayerName}`;
+            document.getElementById('fileNameDisplay').innerText = 'لم يتم اختيار ملف بعد';
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+        }
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                selectedFile = files[0];
+                document.getElementById('fileNameDisplay').innerText = `تم اختيار: ${selectedFile.name}`;
+            }
+        }
+
+        function submitPrayerProof() {
+            if (!selectedFile) {
+                alert('الرجاء اختيار صورة الإثبات أولاً');
+                return;
+            }
+
+            // Update user state
+            appState.completedPrayers[selectedPrayerForUpload] = Date.now();
+            appState.points += 10;
+            saveState();
+
+            closeUploadModal();
+            renderPrayers();
+            updateHeaderStats();
+            renderLeaderboard();
+
+            // Show Wisdom Popup
+            showWisdomPopup();
+        }
+
+        // Wisdom Popup Logic
+        function showWisdomPopup() {
+            const randomWisdom = wisdomsList[Math.floor(Math.random() * wisdomsList.length)];
+            document.getElementById('wisdomBadge').innerText = randomWisdom.type;
+            document.getElementById('wisdomContent').innerText = randomWisdom.text;
+            document.getElementById('wisdomModal').classList.remove('hidden');
+        }
+
+        function closeWisdomModal() {
+            document.getElementById('wisdomModal').classList.add('hidden');
+        }
+
+        // Leaderboard & Friends Logic
+        function addFriend() {
+            const nameInput = document.getElementById('friendNameInput');
+            const friendName = nameInput.value.trim();
+
+            if (!friendName) return;
+
+            // Add simulated friend with initial points
+            appState.friends.push({
+                name: friendName,
+                points: Math.floor(Math.random() * 3) * 10
+            });
+
+            saveState();
+            renderLeaderboard();
+            nameInput.value = '';
+        }
+
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = '';
+
+            // Combine user and friends list
+            let list = [
+                { name: `${appState.currentUser} (أنت)`, points: appState.points, isSelf: true },
+                ...appState.friends.map(f => ({ name: f.name, points: f.points, isSelf: false }))
+            ];
+
+            // Sort by points descending
+            list.sort((a, b) => b.points - a.points);
+
+            list.forEach((item, index) => {
+                let rankBadge = `<span class="font-bold text-gray-300">#${index + 1}</span>`;
+                if (index === 0) rankBadge = `<i class="fa-solid fa-crown text-amber-400 text-lg"></i>`;
+                else if (index === 1) rankBadge = `<i class="fa-solid fa-medal text-gray-300 text-base"></i>`;
+                else if (index === 2) rankBadge = `<i class="fa-solid fa-award text-amber-600 text-base"></i>`;
+
+                const rowHTML = `
+                    <tr class="py-3 ${item.isSelf ? 'bg-amber-400/10 font-bold' : ''}">
+                        <td class="py-3 px-2">${rankBadge}</td>
+                        <td class="py-3 px-2 text-gray-200 ${item.isSelf ? 'text-amber-300' : ''}">${item.name}</td>
+                        <td class="py-3 px-2 text-left font-bold text-amber-400">${item.points} نقطة</td>
+                    </tr>
+                `;
+                tbody.innerHTML += rowHTML;
+            });
+        }
+
+        function updateHeaderStats() {
+            document.getElementById('userPointsDisplay').innerText = appState.points;
+            document.getElementById('currentUserNameDisplay').innerText = appState.currentUser;
+        }
+    </script>
+</body>
+</html>
